@@ -1,0 +1,130 @@
+﻿@model IEnumerable<Springfield.Models.ItemModel.ItemViewModel>
+
+@{
+    ViewBag.Title = "Home Page";
+}
+
+@*<div class="jumbotron">
+    <h1>ASP.NET</h1>
+    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
+    <p><a href="https://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <h2>Getting started</h2>
+        <p>
+            ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
+            enables a clean separation of concerns and gives you full control over markup
+            for enjoyable, agile development.
+        </p>
+        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
+    </div>
+    <div class="col-md-4">
+        <h2>Get more libraries</h2>
+        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
+        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
+    </div>
+    <div class="col-md-4">
+        <h2>Web Hosting</h2>
+        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
+        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
+    </div>
+</div>*@
+
+<br />
+<br />
+
+<div id="items">
+
+    <div class="col-md-6">
+        <select class="form-control" v-model="catalogId">
+            <option v-for="catalog in catalogue" v-bind:value="catalog.Value">
+                {{ catalog.Text }}
+            </option>
+        </select>
+    </div>
+
+    <div class="col-md-6">
+        <div class="hignlight-group">
+            <input type="text" v-model="search" required>
+            <span class="highlight"></span>
+            <span class="bar"></span>
+            <label>输入物品名称</label>
+        </div>
+    </div>
+
+
+    @*<div class="col-md-6">
+        <select class="form-control" v-model="catalogId">
+            <option v-for="catalog in catalogue" v-bind:value="catalog.Value">
+                {{ catalog.Text }}
+            </option>
+        </select>
+    </div>
+
+    <div class="col-md-6 hignlight-group">
+        <input type="text" v-model="search" required>
+        <span class="highlight"></span>
+        <span class="bar"></span>
+        <label>输入物品名称</label>
+    </div>*@
+
+    <transition-group enter-active-class="animated bounceIn" leave-active-class="animated bounceOut" class="col-md-12 gallay-container">
+        <template v-for="(item, index) in filteredItems">
+            <a class="gallay-item" v-bind:key="item" v-bind:href=" '/Product/Detail/' + item.Id">
+                <img :src="item.ProfileImagePath">
+                <div class="gally-item-detail">
+                    <div>简介：{{item.Description}}</div>
+                    <div>价格：{{item.Price | currency}}</div>
+                    <div>用户名: {{item.UserName}}</div>
+                    <div v-if="item.Phone">电话：{{item.Phone}}</div>
+                    <div v-if="item.QQ">QQ：{{item.QQ}}</div>
+                    <div v-if="item.WeChat">电话：{{item.WeChat}}</div>
+                    <div v-if="item.CanDelivery">可送货</div>
+                    <div v-else>需自取</div>
+                </div>
+            </a>
+        </template>
+    </transition-group>
+</div>
+
+<script>
+
+    var items = @Html.Raw(Json.Encode(Model));
+
+    console.log(items);
+
+    var catalogue = @Html.Raw(Json.Encode(ViewBag.Catalogue));
+
+    Vue.filter('currency', function (value) {
+
+        var val = (value / 1).toFixed(2);
+        return '$' + val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+    });
+
+    var items = new Vue({
+        el: '#items',
+        data: {
+            search: "",
+            items: items,
+            catalogId: "",
+            catalogue: catalogue
+        },
+        computed: {
+            filteredItems() {
+                return this.items.filter(item => {
+
+                    if (this.catalogId == "") {
+                        return item.Description.toLowerCase().indexOf(this.search.toLowerCase()) > -1;
+                    }
+                    else {
+                        return item.Description.toLowerCase().indexOf(this.search.toLowerCase()) > -1 && item.CatalogId.indexOf(this.catalogId) > -1;
+                    }
+
+                })
+            },
+        }
+    });
+
+</script>

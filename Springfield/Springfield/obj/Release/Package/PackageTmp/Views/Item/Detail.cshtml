@@ -1,0 +1,148 @@
+﻿@model Springfield.Models.ItemModel.ItemViewModel
+
+@{
+    ViewBag.Title = "Detail";
+}
+
+<h2>Detail</h2>
+
+<div>
+    <h4>Item</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        @*<dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>*@
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Price)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Price)
+        </dd>
+
+        @*<dt>
+            @Html.DisplayNameFor(model => model.Quantity)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Quantity)
+        </dd>*@
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Phone)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Phone)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.QQ)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.QQ)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.WeChat)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.WeChat)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @*@Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |*@
+    <button class="btn btn-info" title="编辑物品" data-toggle="modal" data-target="#editItemModal">编辑</button>
+    @Html.ActionLink("返回物品列表", "Index", null, new { @class = "btn btn-info btn-sm" })
+</p>
+
+<div class="row" style="padding:20px">
+    <div class="jumbotron">
+        <form action="@Url.Action("AddImage", "Item")" method="post" enctype="multipart/form-data" class="dropzone" id="dropzoneForm" style="background-color:white; border:1px solid #CCC;">
+            @Html.TextBoxFor(x => x.Id, new { @class = "hidden", name = "itemId" })
+        </form>
+    </div>
+</div>
+
+
+<div id="imagesPanel" class="panel panel-success">
+    <div class="panel-heading">
+        照片
+    </div>
+    <div class="panel-body">
+        <div id="imagesDetail">
+            <div class="row">
+                <div class="col-sm-12 col-md-12">
+                    <transition-group enter-active-class="animated bounceIn" leave-active-class="animated fadeOutDown">
+                        <template v-for="(image, index) in images">
+                            <div class="image-delete col-sm-6 col-md-3" v-bind:key="image" style="display:inline;padding:unset;">
+                                <img :src="image.Path" class="hover-shadow cursor image-column" :alt="image.Path" @*v-on:click="openModal(); currentSlide(index+1)"*@ style="width:100%" />
+                                <button type="button" class="fa fa-trash-o fa-2x" title="删除这个照片" v-on:click="deleteImage(image.Id, index)"></button>
+                            </div>
+                            @*<div class="gallay-item image-delete" v-bind:key="image">
+                        <img :src="image.Path" class="hover-shadow cursor" :alt="image.Path" v-on:click="openModal(); currentSlide(index+1)" style="width:100%" />
+                        <button type="button" class="fa fa-trash-o fa-2x" title="删除这个照片" :data-image-id="image.Id" onclick="deleteImage(this)"></button>
+                    </div>*@
+                        </template>
+                    </transition-group>
+                </div>
+
+
+                <div id="imageModel" class="image-modal">
+                    <span class="image-close cursor" onclick="closeModal()">&times;</span>
+                    <div class="image-modal-content">
+                        <template v-for="(image, index) in images">
+                            <div class="image-slides">
+                                <div class="image-numberText"> {{index + 1}} / {{images.length}}</div>
+                                <img :src="image.Path" class="image-pic" :data-image-id="image.Id" />
+                            </div>
+                        </template>
+
+                        <a class="image-prev" onclick="plusSlides(-1)">&#10094;</a>
+                        <a class="image-next" onclick="plusSlides(1)">&#10095;</a>
+
+                        <template v-for="(image, index) in images">
+                            <img class="image-trumb image-column" style="float:left;width:25%;" :src="image.Path" v-on:click="currentSlide(index+1)"  :data-image-id="image.Id">
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editItemModal" role="dialog">
+    <div class="modal-dialog">
+        @Html.Action("_Edit", "Item", new { model = Model })
+    </div>
+</div>
+
+<script>
+    var itemId = @Html.Raw(Json.Encode(Model.Id));
+</script>
+
+@section Scripts {
+    @*@Scripts.Render("~/Scripts/image-model-silder.js")*@
+    @Scripts.Render("~/bundles/dropzone")
+    @Scripts.Render("~/Scripts/sf.item.detail.js")
+    @Scripts.Render("~/bundles/jqueryval")
+}
+

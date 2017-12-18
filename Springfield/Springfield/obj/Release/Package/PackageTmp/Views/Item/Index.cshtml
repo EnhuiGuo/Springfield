@@ -1,0 +1,67 @@
+﻿@model IEnumerable<Springfield.Models.ItemModel.ItemViewModel>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<br />
+
+<div class="panel panel-success">
+    <div class="panel-heading">
+        <div style="width:50%;display:inline-block;">
+            <span>您的物品</span>
+        </div><div style="width:50%;display:inline-block;text-align:right">
+            @*<button class="btn btn-success btn-sm" title="添加新的物品">添加物品</button>*@
+            @Html.ActionLink("添加新物品", "Create",null, new { @class = "btn btn-success btn-sm" })
+        </div>
+    </div>
+    <div class="panel-body">
+
+        <div id="items">
+            <div class="hignlight-group">
+                <input type="text" v-model="search" required>
+                <span class="highlight"></span>
+                <span class="bar"></span>
+                <label>输入物品名称</label>
+            </div>
+
+            <div>
+                <transition-group enter-active-class="animated bounceIn" leave-active-class="animated bounceOut" class="gallay-container">
+                    <template v-for="(item, index) in filteredItems">
+                        <div  class="gallay-item" v-bind:key="item">
+                            <a v-bind:href=" '/Item/Detail/' + item.Id">
+                                <img :src="item.ProfileImagePath">
+                                <div class="gally-item-detail">
+                                    @*<p>名字: {{item.Name}}</p>*@
+                                    <p>简介：{{item.Description}}</p>
+                                    <p v-if="item.Price">价格：{{item.Price | currency}}</p>
+                                    <p v-if="item.Phone">电话：{{item.Phone}}</p>
+                                    <p v-if="item.QQ">QQ：{{item.QQ}}</p>
+                                    <p v-if="item.WeChat">电话：{{item.WeChat}}</p>
+                                    <p>类别：{{item.Catalog}}</p>
+                                    <p v-if="item.CanDelivery">可送货</p>
+                                    <p v-else>需自取</p>
+                                    <p v-if="item.OnSell">已上架</p>
+                                    <p v-else>未上架</p>
+                                </div>
+                            </a>
+                            <div>
+                                <span v-if="!item.OnSell"><button class="btn btn-success" title="上架" v-on:click="setOnSell(item.Id, item.OnSell, index)" >上架</button></span>
+                                <span v-else="item.OnSell"><button class="btn btn-warning" title="下架"  v-on:click="setOnSell(item.Id, item.OnSell, index)">下架</button></span>
+                                <button class="btn btn-danger" title="删除" v-on:click="deleteItem(item.Id, index)">删除</button>
+                            </div>
+                        </div>
+                    </template>
+                </transition-group>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var items = @Html.Raw(Json.Encode(Model));
+</script>
+
+@section Scripts {
+    @Scripts.Render("~/Scripts/sf.items.js")
+}
